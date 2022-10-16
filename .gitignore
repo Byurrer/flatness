@@ -1,0 +1,7 @@
+/content
+/vendor
+/composer.lock
+/logs
+/demo2
+php_errors.log
+xdebug.log
