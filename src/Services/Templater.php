@@ -29,7 +29,7 @@ class Templater implements TemplaterInterface
 
             /** @var ContainerAbstract */
             $container = $resource;
-            $countPage = round($container->getTotal() / $container->getLimit() + 0.5);
+            $countPage = ceil($container->getTotal() / $container->getLimit());
             $currPage = round($container->getOffset() / $container->getLimit() + 0.5);
             $env['content'] .= $this->makePagination($resource, $currPage, $countPage);
         } elseif (is_subclass_of($resource, Post::class) || get_class($resource) == Post::class) {
