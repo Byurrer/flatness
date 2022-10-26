@@ -20,8 +20,8 @@ class Directory implements DirectoryInterface
         usort(
             $this->files,
             function (string $a, string $b) {
-                $a = basename($a);
-                $b = basename($b);
+                $a = explode('_', basename($a), 2)[0];
+                $b = explode('_', basename($b), 2)[0];
                 if ($a == $b) {
                     return 0;
                 }
