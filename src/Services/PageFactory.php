@@ -39,7 +39,7 @@ class PageFactory implements PageFactoryInterface
     public function makeCategory(string $uri, int $pagenum = 1): Page
     {
         if (!($category = $this->content->getDirectory($uri))) {
-            return $this->templater->make404();
+            return $this->templater->makeService(404);
         }
         $postList = Category::fromDirectory($category, ($pagenum - 1) * PAGINATION_LIMIT, PAGINATION_LIMIT);
         $page = $this->templater->makePage($postList);
@@ -69,7 +69,7 @@ class PageFactory implements PageFactoryInterface
         }
 
         if ($postListConcrete->count() == 0) {
-            $page = $this->templater->make404();
+            $page = $this->templater->makeService(404);
         } else {
             $postListConcrete->setOffset($offset);
             $postListConcrete->setLimit(PAGINATION_LIMIT);
@@ -91,7 +91,7 @@ class PageFactory implements PageFactoryInterface
     public function makePost(string $uri): Page
     {
         if (!($postFile = $this->content->getFile($uri))) {
-            return $this->templater->make404();
+            return $this->templater->makeService(404);
         }
         $post = Post::fromFile($postFile);
         $page = $this->templater->makePage($post);
@@ -102,9 +102,9 @@ class PageFactory implements PageFactoryInterface
     /**
      * @inheritDoc
      */
-    public function make404(): Page
+    public function makeService(int $code): Page
     {
-        return $this->templater->make404();
+        return $this->templater->makeService($code);
     }
 
     //######################################################################

@@ -93,10 +93,10 @@ class Templater implements TemplaterInterface
     /**
      * @inheritDoc
      */
-    public function make404(): Page
+    public function makeService(int $code): Page
     {
-        $name = '404';
-        $content = '404';
+        $name = $content = strval($code);
+        $type = Page::TYPE_SERVICE;
         ob_start();
         include($this->pathTemplateDir . '/Index.php');
         $html = ob_get_clean();

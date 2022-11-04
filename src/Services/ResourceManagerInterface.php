@@ -44,9 +44,11 @@ interface ResourceManagerInterface
     public function getPost(string $uri): Page;
 
     /**
-     * Получить сервисную страницу 404
+     * Получить сервисную страницу
+     *
+     * @param integer $code http код
      *
      * @return Page
      */
-    public function getService404(): Page;
+    public function getService(int $code): Page;
 }

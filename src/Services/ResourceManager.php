@@ -89,9 +89,9 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getService404(): Page
+    public function getService(int $code): Page
     {
-        return $this->pageFactory->make404();
+        return $this->pageFactory->makeService($code);
     }
 
     //######################################################################
