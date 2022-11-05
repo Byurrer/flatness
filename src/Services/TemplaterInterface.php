@@ -40,9 +40,11 @@ interface TemplaterInterface
     //######################################################################
 
     /**
-     * Сгенерировать 404 страницу
+     * Сгенерировать сервисную страницу
+     *
+     * @param integer $code http код
      *
      * @return Page
      */
-    public function make404(): Page;
+    public function makeService(int $code): Page;
 }

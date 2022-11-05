@@ -44,9 +44,11 @@ interface PageFactoryInterface
     public function makePost(string $uri): Page;
 
     /**
-     * Сгенерировать страницу 404
+     * Сгенерировать сервисную страницу
+     *
+     * @param integer $code http код
      *
      * @return Page
      */
-    public function make404(): Page;
+    public function makeService(int $code): Page;
 }

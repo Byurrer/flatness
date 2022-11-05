@@ -62,7 +62,7 @@ try {
     $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
     switch ($routeInfo[0]) {
         case FastRoute\Dispatcher::NOT_FOUND:
-            $response = new Response(404, [], $resourceManager->getService404());
+            $response = new Response(404, [], $resourceManager->getService(404));
             break;
         case FastRoute\Dispatcher::FOUND:
             $handler = $routeInfo[1];

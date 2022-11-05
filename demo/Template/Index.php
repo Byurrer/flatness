@@ -22,6 +22,8 @@
                     include(__DIR__ . '/Introductions/Post.php');
                 } elseif ($type == 'tag') {
                     include(__DIR__ . '/Introductions/Tag.php');
+                } elseif ($type == 'service') {
+                    include(__DIR__ . '/Introductions/Service.php');
                 }
                 ?>
             </div>
