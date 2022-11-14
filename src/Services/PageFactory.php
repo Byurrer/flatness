@@ -62,7 +62,7 @@ class PageFactory implements PageFactoryInterface
             $post = $postListAll[$i];
             if (array_search($tag, $post->getTags()) !== false) {
                 ++$total;
-                if ($i >= $offset && $i < min($offset + PAGINATION_LIMIT, $postListAll->count())) {
+                if ($total > $offset && $postListConcrete->count() < PAGINATION_LIMIT) {
                     $postListConcrete[] = $post;
                 }
             }
