@@ -10,10 +10,10 @@ use League\CommonMark\Extension\FrontMatter\FrontMatterProviderInterface;
  */
 class Post extends ResourceAbstract implements RenderableInterface
 {
-    public static function fromFile(FileInterface $file): self
+    public static function fromFile(FileInterface $file, string $uri): self
     {
         $post = new self();
-        $post->setUri($file->getName());
+        $post->setUri($uri);
 
         $md = $file->getContent();
 

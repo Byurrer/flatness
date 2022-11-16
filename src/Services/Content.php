@@ -23,9 +23,9 @@ class Content implements ContentInterface
     /**
      * @inheritDoc
      */
-    public function getFile(string $uri): ?FileInterface
+    public function getFile(string $fileName): ?FileInterface
     {
-        $path = $this->searchFile($this->dir, $uri);
+        $path = $this->searchFile($this->dir, $fileName);
         if ($path && file_exists($path) && !is_dir($path)) {
             $file = new File($path, $this->dir);
             return $file;
@@ -37,11 +37,11 @@ class Content implements ContentInterface
     /**
      * @inheritDoc
      */
-    public function getDirectory(string $uri): ?DirectoryInterface
+    public function getDirectory(string $path): ?DirectoryInterface
     {
-        $path = ($uri && $uri != '/' ? $this->dir . '/' . $uri : $this->dir);
-        if (file_exists($path) && is_dir($path)) {
-            $file = new Directory($path, $this->dir);
+        $path2 = ($path && $path != '/' ? $this->dir . '/' . $path : $this->dir);
+        if (file_exists($path2) && is_dir($path2)) {
+            $file = new Directory($path2, $this->dir);
             return $file;
         }
 
@@ -60,10 +60,10 @@ class Content implements ContentInterface
      * Рекурсивный поиск первого подходящего файла
      *
      * @param string $dir
-     * @param string $uri
+     * @param string $fileName
      * @return string|null
      */
-    protected function searchFile(string $dir, string $uri): ?string
+    protected function searchFile(string $dir, string $fileName): ?string
     {
         $a = scandir($dir);
 
@@ -74,12 +74,12 @@ class Content implements ContentInterface
 
             $path = $dir . '/' . $file;
             if (is_dir($path)) {
-                if ($res = $this->searchFile($path, $uri)) {
+                if ($res = $this->searchFile($path, $fileName)) {
                     return $res;
                 }
             }
 
-            if (stripos($file, $uri) === 0) {
+            if (stripos($file, $fileName) === 0) {
                 return $path;
             }
         }

@@ -20,28 +20,28 @@ interface ResourceManagerInterface
     /**
      * Получить страницу категории, с пагинацией
      *
-     * @param string $uri
+     * @param string $name
      * @param integer $pagenum
      * @return Page
      */
-    public function getCategory(string $uri, int $pagenum = 1): Page;
+    public function getCategory(string $name, int $pagenum = 1): Page;
 
     /**
      * Получить страницу тега, с пагинацией
      *
-     * @param string $uri
+     * @param string $name
      * @param integer $pagenum
      * @return Page
      */
-    public function getTag(string $uri, int $pagenum = 1): Page;
+    public function getTag(string $name, int $pagenum = 1): Page;
 
     /**
      * Получить страницу поста
      *
-     * @param string $uri
+     * @param string $name
      * @return Page
      */
-    public function getPost(string $uri): Page;
+    public function getPost(string $name): Page;
 
     /**
      * Получить сервисную страницу

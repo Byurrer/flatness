@@ -15,10 +15,16 @@ class PageFactory implements PageFactoryInterface
 {
     public function __construct(
         ContentInterface $content,
-        TemplaterInterface $templater
+        TemplaterInterface $templater,
+        callable $postUriBuilder,
+        callable $tagUriBuilder,
+        callable $categoryUriBuilder
     ) {
         $this->content = $content;
         $this->templater = $templater;
+        $this->postUriBuilder = $postUriBuilder;
+        $this->tagUriBuilder = $tagUriBuilder;
+        $this->categoryUriBuilder = $categoryUriBuilder;
     }
 
     /**
@@ -27,7 +33,7 @@ class PageFactory implements PageFactoryInterface
     public function makeIndex(int $pagenum = 1): Page
     {
         $index = $this->content->getDirectory('/');
-        $postList = Index::fromDirectory($index, ($pagenum - 1) * PAGINATION_LIMIT, PAGINATION_LIMIT);
+        $postList = Index::fromDirectory($index, $this->postUriBuilder, ($pagenum - 1) * PAGINATION_LIMIT, PAGINATION_LIMIT);
         $page = $this->templater->makePage($postList);
 
         return $page;
@@ -36,12 +42,12 @@ class PageFactory implements PageFactoryInterface
     /**
      * @inheritDoc
      */
-    public function makeCategory(string $uri, int $pagenum = 1): Page
+    public function makeCategory(string $path, int $pagenum = 1): Page
     {
-        if (!($category = $this->content->getDirectory($uri))) {
+        if (!($category = $this->content->getDirectory($path))) {
             return $this->templater->makeService(404);
         }
-        $postList = Category::fromDirectory($category, ($pagenum - 1) * PAGINATION_LIMIT, PAGINATION_LIMIT);
+        $postList = Category::fromDirectory($category, $this->postUriBuilder, ($pagenum - 1) * PAGINATION_LIMIT, PAGINATION_LIMIT);
         $page = $this->templater->makePage($postList);
 
         return $page;
@@ -54,7 +60,7 @@ class PageFactory implements PageFactoryInterface
     {
         $offset = ($pagenum - 1) * PAGINATION_LIMIT;
         $directory = $this->content->getDirectory('/');
-        $postListAll = Index::fromDirectory($directory, 0, PHP_INT_MAX);
+        $postListAll = Index::fromDirectory($directory, $this->postUriBuilder, 0, PHP_INT_MAX);
         $postListConcrete = new Tag();
 
         $total = 0;
@@ -75,7 +81,8 @@ class PageFactory implements PageFactoryInterface
             $postListConcrete->setLimit(PAGINATION_LIMIT);
             $postListConcrete->setTotal($total);
 
-            $postListConcrete->setUri($tag);
+            $tagUriBuilder = $this->tagUriBuilder;
+            $postListConcrete->setUri($tagUriBuilder($tag));
             $postListConcrete->setName($tag);
             $postListConcrete->setDescription('');
 
@@ -88,12 +95,13 @@ class PageFactory implements PageFactoryInterface
     /**
      * @inheritDoc
      */
-    public function makePost(string $uri): Page
+    public function makePost(string $name): Page
     {
-        if (!($postFile = $this->content->getFile($uri))) {
+        if (!($postFile = $this->content->getFile($name))) {
             return $this->templater->makeService(404);
         }
-        $post = Post::fromFile($postFile);
+        $postUriBuilder = $this->postUriBuilder;
+        $post = Post::fromFile($postFile, $postUriBuilder($postFile));
         $page = $this->templater->makePage($post);
 
         return $page;
@@ -113,4 +121,7 @@ class PageFactory implements PageFactoryInterface
 
     protected ContentInterface $content;
     protected Templater $templater;
+    protected $postUriBuilder;
+    protected $tagUriBuilder;
+    protected $categoryUriBuilder;
 }

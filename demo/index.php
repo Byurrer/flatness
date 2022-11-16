@@ -9,6 +9,7 @@ use Flatness\Core\Services\Cache;
 use Flatness\Core\Services\Content;
 use Flatness\Core\Services\Templater;
 use Flatness\Core\Services\PageFactory;
+use Flatness\Core\FileSystem\FileInterface;
 use Flatness\Core\Services\ResourceManager;
 
 //##########################################################################
@@ -55,7 +56,13 @@ $response = null;
 $cache = new Cache(CACHE_DIR);
 $content = new Content(CONTENT_DIR);
 $templater = new Templater(TEMPLATE_DIR);
-$pageFactory = new PageFactory($content, $templater);
+$pageFactory = new PageFactory(
+    $content,
+    $templater,
+    fn(FileInterface $filePost) => sprintf("%s.html", $filePost->getName()),
+    fn(string $tag) => sprintf("/tag/%s", $tag),
+    fn(string $category) => sprintf("/category/%s", $category)
+);
 $resourceManager = new ResourceManager($cache, $pageFactory);
 
 try {

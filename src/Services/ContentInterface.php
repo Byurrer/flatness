@@ -13,16 +13,16 @@ interface ContentInterface
     /**
      * Получить объект файла (рекурсивный обход)
      *
-     * @param string $uri имя файла без расширения
+     * @param string $fileName имя файла без расширения
      * @return FileInterface|null
      */
-    public function getFile(string $uri): ?FileInterface;
+    public function getFile(string $fileName): ?FileInterface;
 
     /**
      * Получить объект директории
      *
-     * @param string $uri путь относительно корня контента, для корня файлов контента нужно передать пустую строку или /
+     * @param string $path путь относительно контента, для корня файлов контента нужно передать пустую строку или /
      * @return DirectoryInterface|null
      */
-    public function getDirectory(string $uri): ?DirectoryInterface;
+    public function getDirectory(string $path): ?DirectoryInterface;
 }

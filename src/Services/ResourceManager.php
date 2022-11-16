@@ -35,13 +35,13 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getCategory(string $uri, int $pagenum = 1): Page
+    public function getCategory(string $path, int $pagenum = 1): Page
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getCategory($uri, $pagenum))) {
+        if (CACHE_ENABLE && ($page = $this->cache->getCategory($path, $pagenum))) {
             return $page;
         }
 
-        $page = $this->pageFactory->makeCategory($uri, $pagenum);
+        $page = $this->pageFactory->makeCategory($path, $pagenum);
 
         if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
             $this->cache->save($page);
@@ -53,13 +53,13 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getTag(string $uri, int $pagenum = 1): Page
+    public function getTag(string $name, int $pagenum = 1): Page
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getTag($uri, $pagenum))) {
+        if (CACHE_ENABLE && ($page = $this->cache->getTag($name, $pagenum))) {
             return $page;
         }
 
-        $page = $this->pageFactory->makeTag($uri, $pagenum);
+        $page = $this->pageFactory->makeTag($name, $pagenum);
 
         if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
             $this->cache->save($page);
@@ -71,13 +71,13 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getPost(string $uri): Page
+    public function getPost(string $name): Page
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getPost($uri))) {
+        if (CACHE_ENABLE && ($page = $this->cache->getPost($name))) {
             return $page;
         }
 
-        $page = $this->pageFactory->makePost($uri);
+        $page = $this->pageFactory->makePost($name);
 
         if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
             $this->cache->save($page);

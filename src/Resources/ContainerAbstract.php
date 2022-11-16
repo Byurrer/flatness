@@ -11,6 +11,7 @@ abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAcces
 {
     public static function fromDirectory(
         DirectoryInterface $category,
+        callable $postUriBuilder,
         int $offset = 0,
         int $limit = 10
     ): self {
@@ -25,7 +26,7 @@ abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAcces
             $i++ < $limit
             && ($postFile = $category->getFileIncr())
         ) {
-            $postList[] = Post::fromFile($postFile);
+            $postList[] = Post::fromFile($postFile, $postUriBuilder($postFile));
         }
 
         $indexFile = $category->getIndex();
