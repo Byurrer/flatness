@@ -8,7 +8,7 @@
             foreach ($categories as $category) {
                 $a[] = $category;
                 $cat = implode('/', $a);
-                ?> / <a class="service" href="<?= CATEGORY_URI_PREFIX . $cat; ?>"><?= $category; ?></a>
+                ?> / <a class="service" href="<?= $buildUriCategory($cat); ?>"><?= $category; ?></a>
         <?php }} ?></span>
     </div>
     <div class="card-description"><?= $description; ?></div>
@@ -16,7 +16,7 @@
     <?php
         if (isset($tags)) {
             foreach ($tags as $tag) {
-                ?> <a class="service" href="<?= TAG_URI_PREFIX . $tag; ?>">#<?= $tag; ?></a>
+                ?> <a class="service" href="<?= $buildUriTag($tag); ?>">#<?= $tag; ?></a>
     <?php }} ?>
     </div>
 </div>

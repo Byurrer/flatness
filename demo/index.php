@@ -9,6 +9,7 @@ use Flatness\Core\Services\Cache;
 use Flatness\Core\Services\Content;
 use Flatness\Core\Services\Templater;
 use Flatness\Core\Services\PageFactory;
+use Flatness\Core\FileSystem\FileInterface;
 use Flatness\Core\Services\ResourceManager;
 
 //##########################################################################
@@ -52,10 +53,22 @@ $uri = rawurldecode($uri);
 /** @var Response */
 $response = null;
 
-$cache = new Cache(CACHE_DIR);
-$content = new Content(CONTENT_DIR);
-$templater = new Templater(TEMPLATE_DIR);
-$pageFactory = new PageFactory($content, $templater);
+$env = [
+    'buildUriPost' => fn(FileInterface $filePost) => sprintf("/%s.html", $filePost->getName()),
+    'buildUriTag' => fn(string $tag) => sprintf("/tag/%s", $tag),
+    'buildUriCategory' => fn(string $category) => sprintf("/category/%s", $category)
+];
+
+$cache = new Cache(ROOT_DIR . '/cache');
+$content = new Content(ROOT_DIR . '/demo/content');
+$templater = new Templater(ROOT_DIR . '/demo/Template', $env);
+$pageFactory = new PageFactory(
+    $content,
+    $templater,
+    $env['buildUriPost'],
+    $env['buildUriTag'],
+    $env['buildUriCategory'],
+);
 $resourceManager = new ResourceManager($cache, $pageFactory);
 
 try {

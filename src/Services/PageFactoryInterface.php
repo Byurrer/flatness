@@ -20,28 +20,28 @@ interface PageFactoryInterface
     /**
      * Сделать страницу категории
      *
-     * @param string $uri
+     * @param string $path
      * @param integer $pagenum
      * @return Page
      */
-    public function makeCategory(string $uri, int $pagenum = 0): Page;
+    public function makeCategory(string $path, int $pagenum = 0): Page;
 
     /**
      * Сделать страницу тега
      *
-     * @param string $uri
+     * @param string $name
      * @param integer $pagenum
      * @return Page
      */
-    public function makeTag(string $uri, int $pagenum = 0): Page;
+    public function makeTag(string $name, int $pagenum = 0): Page;
 
     /**
      * Сделать страницу поста
      *
-     * @param string $uri
+     * @param string $name
      * @return Page
      */
-    public function makePost(string $uri): Page;
+    public function makePost(string $name): Page;
 
     /**
      * Сгенерировать сервисную страницу
