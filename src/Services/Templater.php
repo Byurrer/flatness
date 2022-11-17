@@ -84,7 +84,7 @@ class Templater implements TemplaterInterface
     {
         $uri = $resource->getUri();
         if ($uri != '/') {
-            $uri = '/' . $uri . '/';
+            $uri = '/' . trim($uri, '/') . '/';
         }
         extract($this->env);
         ob_start();
