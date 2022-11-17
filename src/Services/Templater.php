@@ -12,9 +12,14 @@ use Flatness\Core\Resources\ContainerAbstract;
  */
 class Templater implements TemplaterInterface
 {
-    public function __construct(string $pathTemplateDir)
+    /**
+     * @param string $pathTemplateDir
+     * @param array<string, mixed> $env дополнительные данные передаваемые в каждый шаблон
+     */
+    public function __construct(string $pathTemplateDir, array $env = [])
     {
         $this->pathTemplateDir = $pathTemplateDir;
+        $this->env = $env;
     }
 
     /**
@@ -22,7 +27,7 @@ class Templater implements TemplaterInterface
      */
     public function makePage(ResourceAbstract $resource): Page
     {
-        $env = $resource->getEnv();
+        $env = array_merge($resource->getEnv(), $this->env);
 
         if (is_subclass_of($resource, ContainerAbstract::class)) {
             $env['content'] = $this->getArrayContent($resource);
@@ -62,7 +67,7 @@ class Templater implements TemplaterInterface
      */
     public function makeCard(ResourceAbstract $resource): string
     {
-        $env = $resource->getEnv();
+        $env = array_merge($resource->getEnv(), $this->env);
         extract($env);
 
         ob_start();
@@ -81,6 +86,7 @@ class Templater implements TemplaterInterface
         if ($uri != '/') {
             $uri = '/' . $uri . '/';
         }
+        extract($this->env);
         ob_start();
         include($this->pathTemplateDir . '/Pagination.php');
         $html = ob_get_clean();
@@ -97,6 +103,7 @@ class Templater implements TemplaterInterface
     {
         $name = $content = strval($code);
         $type = Page::TYPE_SERVICE;
+        extract($this->env);
         ob_start();
         include($this->pathTemplateDir . '/Index.php');
         $html = ob_get_clean();
@@ -114,6 +121,7 @@ class Templater implements TemplaterInterface
     //######################################################################
 
     protected $pathTemplateDir = '';
+    protected $env = [];
 
     //######################################################################
 
@@ -123,6 +131,7 @@ class Templater implements TemplaterInterface
      */
     protected function getArrayContent(ContainerAbstract $resources): string
     {
+        extract($this->env);
         $a = [];
         foreach ($resources as $resource) {
             $a[] = $this->makeCard($resource);

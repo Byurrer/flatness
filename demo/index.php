@@ -53,15 +53,21 @@ $uri = rawurldecode($uri);
 /** @var Response */
 $response = null;
 
-$cache = new Cache(CACHE_DIR);
-$content = new Content(CONTENT_DIR);
-$templater = new Templater(TEMPLATE_DIR);
+$env = [
+    'buildUriPost' => fn(FileInterface $filePost) => sprintf("/%s.html", $filePost->getName()),
+    'buildUriTag' => fn(string $tag) => sprintf("/tag/%s", $tag),
+    'buildUriCategory' => fn(string $category) => sprintf("/category/%s", $category)
+];
+
+$cache = new Cache(ROOT_DIR . '/cache');
+$content = new Content(ROOT_DIR . '/demo/content');
+$templater = new Templater(ROOT_DIR . '/demo/Template', $env);
 $pageFactory = new PageFactory(
     $content,
     $templater,
-    fn(FileInterface $filePost) => sprintf("%s.html", $filePost->getName()),
-    fn(string $tag) => sprintf("/tag/%s", $tag),
-    fn(string $category) => sprintf("/category/%s", $category)
+    $env['buildUriPost'],
+    $env['buildUriTag'],
+    $env['buildUriCategory'],
 );
 $resourceManager = new ResourceManager($cache, $pageFactory);
 

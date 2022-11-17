@@ -11,6 +11,7 @@ abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAcces
 {
     public static function fromDirectory(
         DirectoryInterface $category,
+        string $uri,
         callable $postUriBuilder,
         int $offset = 0,
         int $limit = 10
@@ -34,7 +35,7 @@ abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAcces
         $postList->render = $postList->converter->convert($md);
         $map = $postList->render->getFrontMatter();
 
-        $postList->setUri($category->getName());
+        $postList->setUri($uri);
         $postList->setName($map['name']);
         $postList->setDescription($map['description']);
         $postList->frontMatter = $map;
