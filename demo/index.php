@@ -1,7 +1,8 @@
 <?php
 
 require dirname(__DIR__) . '/vendor/autoload.php';
-require 'config.php';
+
+define('ROOT_DIR', dirname(__DIR__));
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;

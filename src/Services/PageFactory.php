@@ -18,13 +18,15 @@ class PageFactory implements PageFactoryInterface
         TemplaterInterface $templater,
         callable $buildUriPost,
         callable $buildUriTag,
-        callable $buildUriCategory
+        callable $buildUriCategory,
+        int $perPage = 10
     ) {
         $this->content = $content;
         $this->templater = $templater;
         $this->buildUriPost = $buildUriPost;
         $this->buildUriTag = $buildUriTag;
         $this->buildUriCategory = $buildUriCategory;
+        $this->perPage = $perPage;
     }
 
     /**
@@ -37,8 +39,8 @@ class PageFactory implements PageFactoryInterface
             $index,
             '/',
             $this->buildUriPost,
-            ($pagenum - 1) * PAGINATION_LIMIT,
-            PAGINATION_LIMIT
+            ($pagenum - 1) * $this->perPage,
+            $this->perPage
         );
         $page = $this->templater->makePage($postList);
 
@@ -59,8 +61,8 @@ class PageFactory implements PageFactoryInterface
             $category,
             $uri,
             $this->buildUriPost,
-            ($pagenum - 1) * PAGINATION_LIMIT,
-            PAGINATION_LIMIT
+            ($pagenum - 1) * $this->perPage,
+            $this->perPage
         );
         $page = $this->templater->makePage($postList);
 
@@ -72,7 +74,7 @@ class PageFactory implements PageFactoryInterface
      */
     public function makeTag(string $tag, int $pagenum = 1): Page
     {
-        $offset = ($pagenum - 1) * PAGINATION_LIMIT;
+        $offset = ($pagenum - 1) * $this->perPage;
         $directory = $this->content->getDirectory('/');
         $postListAll = Index::fromDirectory($directory, '', $this->buildUriPost, 0, PHP_INT_MAX);
         $postListConcrete = new Tag();
@@ -82,7 +84,7 @@ class PageFactory implements PageFactoryInterface
             $post = $postListAll[$i];
             if (array_search($tag, $post->getTags()) !== false) {
                 ++$total;
-                if ($total > $offset && $postListConcrete->count() < PAGINATION_LIMIT) {
+                if ($total > $offset && $postListConcrete->count() < $this->perPage) {
                     $postListConcrete[] = $post;
                 }
             }
@@ -92,7 +94,7 @@ class PageFactory implements PageFactoryInterface
             $page = $this->templater->makeService(404);
         } else {
             $postListConcrete->setOffset($offset);
-            $postListConcrete->setLimit(PAGINATION_LIMIT);
+            $postListConcrete->setLimit($this->perPage);
             $postListConcrete->setTotal($total);
 
             $buildUriTag = $this->buildUriTag;
@@ -138,4 +140,5 @@ class PageFactory implements PageFactoryInterface
     protected $buildUriPost;
     protected $buildUriTag;
     protected $buildUriCategory;
+    protected int $perPage = 10;
 }
