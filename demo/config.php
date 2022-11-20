@@ -1,6 +1,6 @@
 <?php
 
-define('CACHE_ENABLE', false);
+// define('CACHE_ENABLE', false);
 
 //##########################################################################
 

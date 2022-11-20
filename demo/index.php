@@ -69,7 +69,7 @@ $pageFactory = new PageFactory(
     $env['buildUriTag'],
     $env['buildUriCategory'],
 );
-$resourceManager = new ResourceManager($cache, $pageFactory);
+$resourceManager = new ResourceManager($pageFactory);
 
 try {
     $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
