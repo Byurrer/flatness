@@ -7,9 +7,8 @@ define('ROOT_DIR', dirname(__DIR__));
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Flatness\Core\Services\Cache;
-use Flatness\Core\Services\Content;
 use Flatness\Core\Services\Templater;
-use Flatness\Core\Services\PageFactory;
+use Flatness\Core\Services\FileManager;
 use Flatness\Core\FileSystem\FileInterface;
 use Flatness\Core\Services\ResourceManager;
 
@@ -29,7 +28,7 @@ $dispatcher = FastRoute\simpleDispatcher(
         );
         $r->addRoute(
             'GET',
-            '/{uri}.html',
+            '/{post}.html',
             'Flatness\\Demo\\Controller::post'
         );
         $r->addRoute(
@@ -39,7 +38,7 @@ $dispatcher = FastRoute\simpleDispatcher(
         );
         $r->addRoute(
             'GET',
-            '/category/{uri:.+}[/{page:\d+}]',
+            '/category/{category}[/{page:\d+}]',
             'Flatness\\Demo\\Controller::category'
         );
     }
@@ -54,29 +53,51 @@ $uri = rawurldecode($uri);
 /** @var Response */
 $response = null;
 
-$env = [
-    'buildUriPost' => fn(FileInterface $filePost) => sprintf("/%s.html", $filePost->getName()),
-    'buildUriTag' => fn(string $tag) => sprintf("/tag/%s", $tag),
-    'buildUriCategory' => fn(string $category) => sprintf("/category/%s", $category)
-];
+$buildUriPost = fn(string $post) => sprintf("/%s.html", $post);
+$buildUriTag = fn(string $tag) => sprintf("/tag/%s", $tag);
+$buildUriCategory = fn(string $category) => sprintf("/category/%s", $category);
+
 
 $cache = new Cache(ROOT_DIR . '/cache');
-$content = new Content(ROOT_DIR . '/demo/content');
-$templater = new Templater(ROOT_DIR . '/demo/Template', $env);
-$pageFactory = new PageFactory(
-    $content,
-    $templater,
-    $env['buildUriPost'],
-    $env['buildUriTag'],
-    $env['buildUriCategory'],
+$fileManager = new FileManager(ROOT_DIR . '/demo/content');
+$resourceManager = new ResourceManager(
+    $fileManager,
+    $buildUriPost,
+    $buildUriTag,
+    $buildUriCategory,
 );
-$resourceManager = new ResourceManager($pageFactory);
+
+$cache->clear();
+
+$tags = [];
+$cats = [];
+
+if (!($tags = $cache->getData('tags'))) {
+    $tags = $resourceManager->getTags();
+    $cache->saveData('tags', $tags);
+}
+
+if (!($cats = $cache->getData('cats'))) {
+    $cats = $resourceManager->getCategories();
+    $cache->saveData('cats', $cats);
+}
+
+$env = [
+    'buildUriPost' => $buildUriPost,
+    'buildUriTag' => $buildUriTag,
+    'buildUriCategory' => $buildUriCategory,
+    'allTags' => $tags,
+    'allCategories' => $cats,
+];
+
+$templater = new Templater(ROOT_DIR . '/demo/Template', $env);
+
 
 try {
     $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
     switch ($routeInfo[0]) {
         case FastRoute\Dispatcher::NOT_FOUND:
-            $response = new Response(404, [], $resourceManager->getService(404));
+            $response = new Response(404, [], $templater->makeService(404));
             break;
         case FastRoute\Dispatcher::FOUND:
             $handler = $routeInfo[1];
@@ -85,7 +106,11 @@ try {
             $request = new Request($httpMethod, $_SERVER['REQUEST_URI']);
             list($class, $method) = explode("::", $handler, 2);
 
-            $ctl = new $class($resourceManager);
+            $ctl = new $class(
+                $resourceManager,
+                $cache,
+                $templater
+            );
 
             /** @var Response */
             $response = $ctl->$method($request, $uriParams, $_GET);

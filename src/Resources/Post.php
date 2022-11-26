@@ -23,7 +23,7 @@ class Post extends ResourceAbstract implements RenderableInterface
 
         $name = $map['name'];
         $description = $map['description'];
-        $tags = $map['tags'];
+        $tags = (isset($map['tags']) ? $map['tags'] : []);
         $categories = $file->getParents();
 
         $post->setName($name);
@@ -88,7 +88,7 @@ class Post extends ResourceAbstract implements RenderableInterface
 
     protected array $category = [];
 
-    protected string $type = Page::TYPE_POST;
+    protected string $type = ResourceAbstract::TYPE_POST;
 
     /** @var array<string> */
     protected array $tags = [];

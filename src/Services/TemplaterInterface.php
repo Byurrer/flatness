@@ -2,7 +2,6 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
 use Flatness\Core\Resources\ResourceAbstract;
 use Flatness\Core\Resources\ContainerAbstract;
 
@@ -12,15 +11,15 @@ use Flatness\Core\Resources\ContainerAbstract;
 interface TemplaterInterface
 {
     /**
-     * Создать страницу из ресурса
+     * Сделать страницу из ресурса
      *
      * @param ResourceAbstract $resource
-     * @return Page
+     * @return string
      */
-    public function makePage(ResourceAbstract $resource): Page;
+    public function makePageFromResource(ResourceAbstract $resource): string;
 
     /**
-     * Сгенерировать html карточку ресурса
+     * Сделать html карточку ресурса
      *
      * @param ResourceAbstract $resource
      * @return string
@@ -28,7 +27,7 @@ interface TemplaterInterface
     public function makeCard(ResourceAbstract $resource): string;
 
     /**
-     * Сгенерировать html пагниации
+     * Сделать html пагинации
      *
      * @param ContainerAbstract $resource
      * @param integer $currPage
@@ -40,11 +39,24 @@ interface TemplaterInterface
     //######################################################################
 
     /**
-     * Сгенерировать сервисную страницу
+     * Сделать сервисную страницу
      *
      * @param integer $code http код
      *
-     * @return Page
+     * @return string
      */
-    public function makeService(int $code): Page;
+    public function makeService(int $code): string;
+
+    //######################################################################
+
+    /**
+     * Сделать страницу из данных
+     *
+     * @param string $template шаблон php
+     * @param string $uri
+     * @param string $type
+     * @param array $data данные для шаблона
+     * @return string
+     */
+    public function makePage(string $template, string $uri, string $type, array $data = []): string;
 }

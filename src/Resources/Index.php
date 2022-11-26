@@ -4,5 +4,5 @@ namespace Flatness\Core\Resources;
 
 class Index extends ContainerAbstract
 {
-    protected string $type = Page::TYPE_INDEX;
+    protected string $type = ResourceAbstract::TYPE_INDEX;
 }

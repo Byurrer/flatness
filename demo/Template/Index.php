@@ -34,6 +34,8 @@
         <div class="footer">
             <div class="footer-copyright">Copyright © 2019-2022 {username}</div>
         </div>
+        <?php echo print_r($allTags, true); ?>
+        <?php echo print_r($allCategories, true); ?>
     </div>
 </body>
 </html>

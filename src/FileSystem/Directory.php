@@ -28,46 +28,26 @@ class Directory implements DirectoryInterface
                 return ($a > $b) ? -1 : 1;
             }
         );
+
+        $this->dirs = $this->scandirdir($this->dirPath);
     }
 
     /**
      * @inheritDoc
      */
-    public function getFileIncr(): ?FileInterface
+    public function getFileIterator(): FileIterator
     {
-        if ($this->offset < count($this->files)) {
-            $file = $this->files[$this->offset++];
-            if (file_exists($file)) {
-                return new File($file, $this->rootPath);
-            }
-        }
-
-        return null;
+        $iterator = new FileIterator($this->files, $this->rootPath);
+        return $iterator;
     }
 
     /**
      * @inheritDoc
      */
-    public function setOffset(int $offset): self
+    public function getDirectoryIterator(): DirectoryIterator
     {
-        $this->offset = $offset;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getOffset(): int
-    {
-        return $this->offset;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTotal(): int
-    {
-        return count($this->files);
+        $iterator = new DirectoryIterator($this->dirs, $this->rootPath);
+        return $iterator;
     }
 
     /**
@@ -98,8 +78,9 @@ class Directory implements DirectoryInterface
 
     protected string $dirPath = '';
     protected string $rootPath = '';
+
     protected array $files = [];
-    protected int $offset = 0;
+    protected array $dirs = [];
 
     //######################################################################
 
@@ -124,5 +105,27 @@ class Directory implements DirectoryInterface
         }
 
         return $files;
+    }
+
+    protected function scandirdir(string $dirPath): array
+    {
+        $a = scandir($dirPath);
+        $dirs = [];
+
+        foreach ($a as $path) {
+            if ($path == '.' || $path == '..') {
+                continue;
+            }
+
+            $path = $dirPath . '/' . $path;
+            if (is_dir($path)) {
+                $dirs[] = $path;
+                if ($res = $this->scandirdir($path)) {
+                    $dirs = array_merge($dirs, $res);
+                }
+            }
+        }
+
+        return $dirs;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
 use Flatness\Core\Resources\Post;
 use Flatness\Core\Resources\ResourceAbstract;
 use Flatness\Core\Resources\ContainerAbstract;
@@ -25,7 +24,7 @@ class Templater implements TemplaterInterface
     /**
      * @inheritDoc
      */
-    public function makePage(ResourceAbstract $resource): Page
+    public function makePageFromResource(ResourceAbstract $resource): string
     {
         $env = array_merge($resource->getEnv(), $this->env);
 
@@ -50,16 +49,7 @@ class Templater implements TemplaterInterface
         include($this->pathTemplateDir . '/Index.php');
         $html = ob_get_clean();
 
-        $page = new Page();
-        $page->setContent($html);
-        $page->setUri($resource->getUri());
-        $page->setType($resource->getType());
-
-        if (is_subclass_of($resource, ContainerAbstract::class)) {
-            $page->setPagenum($currPage);
-        }
-
-        return $page;
+        return $html;
     }
 
     /**
@@ -99,21 +89,31 @@ class Templater implements TemplaterInterface
     /**
      * @inheritDoc
      */
-    public function makeService(int $code): Page
+    public function makeService(int $code): string
     {
         $name = $content = strval($code);
-        $type = Page::TYPE_SERVICE;
+        $type = ResourceAbstract::TYPE_SERVICE;
         extract($this->env);
         ob_start();
         include($this->pathTemplateDir . '/Index.php');
         $html = ob_get_clean();
 
-        $page = new Page();
-        $page->setContent($html);
-        $page->setUri('');
-        $page->setType(Page::TYPE_SERVICE);
+        return $html;
+    }
 
-        return $page;
+    //######################################################################
+
+    /**
+     * @inheritDoc
+     */
+    public function makePage(string $template, string $uri, string $type, array $data = []): string
+    {
+        extract(array_merge($data, $this->env));
+        ob_start();
+        include(sprintf('%s%s.php', $this->pathTemplateDir, $template));
+        $html = ob_get_clean();
+
+        return $html;
     }
 
     //######################################################################

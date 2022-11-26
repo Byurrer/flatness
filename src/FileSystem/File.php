@@ -22,7 +22,14 @@ class File implements FileInterface
      */
     public function getParents(): array
     {
-        $path = str_replace($this->rootPath . '/', '', dirname($this->filePath));
+        $path = str_replace(
+            rtrim($this->rootPath, '/') . '/',
+            '',
+            rtrim(dirname($this->filePath))
+        );
+        if (!$path) {
+            return [];
+        }
         $a = explode('/', $path);
         return $a;
     }

@@ -10,37 +10,39 @@ use Flatness\Core\FileSystem\DirectoryInterface;
 abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAccess, \Countable, \Iterator
 {
     public static function fromDirectory(
-        DirectoryInterface $category,
+        DirectoryInterface $directory,
         string $uri,
         callable $postUriBuilder,
         int $offset = 0,
         int $limit = 10
     ): self {
-        $postList = new static();
-        $postList->setOffset($offset);
-        $postList->setLimit($limit);
-        $category->setOffset($offset);
-        $postList->setTotal($category->getTotal());
+        $list = new static();
+        $list->setOffset($offset);
+        $list->setLimit($limit);
+
+        $iterator = $directory->getFileIterator();
+        $iterator->setOffset($offset);
+        $list->setTotal($iterator->getCount());
 
         $i = 0;
         while (
             $i++ < $limit
-            && ($postFile = $category->getFileIncr())
+            && ($postFile = $iterator->current())
         ) {
-            $postList[] = Post::fromFile($postFile, $postUriBuilder($postFile));
+            $list[] = Post::fromFile($postFile, $postUriBuilder($postFile->getName()));
         }
 
-        $indexFile = $category->getIndex();
+        $indexFile = $directory->getIndex();
         $md = $indexFile->getContent();
-        $postList->render = $postList->converter->convert($md);
-        $map = $postList->render->getFrontMatter();
+        $list->render = $list->converter->convert($md);
+        $map = $list->render->getFrontMatter();
 
-        $postList->setUri($uri);
-        $postList->setName($map['name']);
-        $postList->setDescription($map['description']);
-        $postList->frontMatter = $map;
+        $list->setUri($uri);
+        $list->setName($map['name']);
+        $list->setDescription($map['description']);
+        $list->frontMatter = $map;
 
-        return $postList;
+        return $list;
     }
 
     //######################################################################

@@ -18,6 +18,14 @@ use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
  */
 abstract class ResourceAbstract
 {
+    public const TYPE_INDEX     = 'index';
+    public const TYPE_CATEGORY  = 'category';
+    public const TYPE_POST      = 'post';
+    public const TYPE_TAG       = 'tag';
+    public const TYPE_SERVICE   = 'service';
+
+    //######################################################################
+
     final public function __construct()
     {
         $config = [

@@ -2,54 +2,48 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
-
 /**
  * Интерфейс кэша страниц
  */
 interface CacheInterface
 {
     /**
-     * Получить главную страницу из кэша
-     *
-     * @param integer $pagenum
-     * @return Page
-     */
-    public function getIndex(int $pagenum = 1): ?Page;
-
-    /**
-     * Получить страницу категории из кэша
+     * Получить страницу из кэша
      *
      * @param string $uri
-     * @param integer $pagenum
-     * @return Page|null
+     * @return string|null
      */
-    public function getCategory(string $uri, int $pagenum = 1): ?Page;
+    public function getPage(string $uri): ?string;
 
     /**
-     * Получить страницу тега из кэша
+     * Сохранить страницу в кэш
      *
+     * @param string $page
      * @param string $uri
-     * @param integer $pagenum
-     * @return Page|null
-     */
-    public function getTag(string $uri, int $pagenum = 1): ?Page;
-
-    /**
-     * Получить страницу поста из кэша
-     *
-     * @param string $uri
-     * @return Page|null
-     */
-    public function getPost(string $uri): ?Page;
-
-    /**
-     * Сохранить кэш страницы
-     *
-     * @param Page $page
      * @return void
      */
-    public function save(Page $page): void;
+    public function savePage(string $uri, string $page): void;
+
+    //######################################################################
+
+    /**
+     * Получить произвольные данные из кэша
+     *
+     * @param string $uri
+     * @return array|null
+     */
+    public function getData(string $uri): ?array;
+
+    /**
+     * Сохранить произвольные данные в кэш
+     *
+     * @param string $uri
+     * @param array $data
+     * @return void
+     */
+    public function saveData(string $uri, array $data): void;
+
+    //######################################################################
 
     /**
      * Очистка кэша

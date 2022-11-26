@@ -10,7 +10,7 @@ use Flatness\Core\FileSystem\DirectoryInterface;
 /**
  * Реализация файловой системы контента
  */
-class Content implements ContentInterface
+class FileManager implements FileManagerInterface
 {
     /**
      * @param string $dir корень файлов контента

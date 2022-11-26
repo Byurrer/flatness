@@ -8,33 +8,18 @@ namespace Flatness\Core\FileSystem;
 interface DirectoryInterface
 {
     /**
-     * Выборка файла с инкрементом смещения (для выборки в цикле)
+     * Получить итератор по файлам
      *
-     * @return FileInterface|null
+     * @return FileIterator
      */
-    public function getFileIncr(): ?FileInterface;
+    public function getFileIterator(): FileIterator;
 
     /**
-     * Установить смещение для выборки файла
+     * Получить итератор по директориям
      *
-     * @param integer $offset
-     * @return self
+     * @return DirectoryIterator
      */
-    public function setOffset(int $offset): self;
-
-    /**
-     * Получить смещение для выборки файлов
-     *
-     * @return integer
-     */
-    public function getOffset(): int;
-
-    /**
-     * Получить общее количество файлов (без учета индексных файлов)
-     *
-     * @return integer
-     */
-    public function getTotal(): int;
+    public function getDirectoryIterator(): DirectoryIterator;
 
     /**
      * Получить иднексный файл директории с описанием

@@ -2,28 +2,32 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
-
 /**
  * Реализация интерфейса кэша страниц
  */
 class Cache implements CacheInterface
 {
-    public function __construct(string $dir)
+    /**
+     * @param string $dir полный путь до директории с кэшем
+     * @param integer $ttl время жизни файлов кэша в млсек
+     */
+    public function __construct(string $dir, int $ttl = 3600)
     {
         $this->dir = $dir;
+        $this->ttl = $ttl;
     }
+
+    //######################################################################
 
     /**
      * @inheritDoc
      */
-    public function getIndex(int $pagenum = 1): ?Page
+    public function getPage(string $uri): ?string
     {
         $page = null;
-        $path = $this->getPath(Page::TYPE_INDEX, '', $pagenum);
-        if (file_exists($path)) {
-            $pageRaw = file_get_contents($path);
-            $page = Page::fromArray(json_decode($pageRaw, true));
+        $path = $this->getPagePath($uri);
+        if (file_exists($path) && $this->isAlive($path)) {
+            $page = file_get_contents($path);
         }
 
         return $page;
@@ -32,63 +36,50 @@ class Cache implements CacheInterface
     /**
      * @inheritDoc
      */
-    public function getCategory(string $uri, int $pagenum = 1): ?Page
+    public function savePage(string $uri, string $page): void
     {
-        $page = null;
-        $path = $this->getPath(Page::TYPE_CATEGORY, $uri, $pagenum);
-        if (file_exists($path)) {
-            $pageRaw = file_get_contents($path);
-            $page = Page::fromArray(json_decode($pageRaw, true));
-        }
-
-        return $page;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTag(string $uri, int $pagenum = 1): ?Page
-    {
-        $page = null;
-        $path = $this->getPath(Page::TYPE_TAG, $uri, $pagenum);
-        if (file_exists($path)) {
-            $pageRaw = file_get_contents($path);
-            $page = Page::fromArray(json_decode($pageRaw, true));
-        }
-
-        return $page;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPost(string $uri): ?Page
-    {
-        $page = null;
-        $path = $this->getPath(Page::TYPE_POST, $uri);
-        if (file_exists($path)) {
-            $pageRaw = file_get_contents($path);
-            $page = Page::fromArray(json_decode($pageRaw, true));
-        }
-
-        return $page;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function save(Page $page): void
-    {
-        $path = $this->getPath($page->getType(), $page->getUri(), $page->getPagenum());
+        $path = $this->getPagePath($uri);
 
         $dir = dirname($path);
         if (!file_exists($dir)) {
             $res = mkdir($dir, 0777, true);
         }
-        $a = $page->asArray();
-        $cache = json_encode($a);
+        file_put_contents($path, $page);
+    }
+
+    //######################################################################
+
+    /**
+     * @inheritDoc
+     */
+    public function getData(string $uri): ?array
+    {
+        $data = null;
+        $path = $this->getDataPath($uri);
+        if (file_exists($path) && $this->isAlive($path)) {
+            $dataRaw = file_get_contents($path);
+            $data = json_decode($dataRaw, true);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function saveData(string $uri, array $data): void
+    {
+        $path = $this->getDataPath($uri);
+
+        $dir = dirname($path);
+        if (!file_exists($dir)) {
+            $res = mkdir($dir, 0777, true);
+        }
+        $cache = json_encode($data);
         file_put_contents($path, $cache);
     }
+
+    //######################################################################
 
     /**
      * @inheritDoc
@@ -103,22 +94,62 @@ class Cache implements CacheInterface
     //######################################################################
 
     protected string $dir = '';
+    protected int $ttl = 0;
 
     //######################################################################
 
-    protected function getPath(string $type, string $uri = '', ?int $pagenum = null): string
+    /**
+     * Получить путь до закэшированной страницы
+     *
+     * @param string $uri
+     * @return string
+     */
+    protected function getPagePath(string $uri = ''): string
     {
         $path = sprintf(
-            '%s/%s/%s-%d.json',
+            '%s/pages/%s.html',
             $this->dir,
-            $type,
             $uri,
-            ($pagenum ? $pagenum : 0)
         );
 
         return $path;
     }
 
+    /**
+     * Получить путь до закэшированных данных
+     *
+     * @param string $uri
+     * @return string
+     */
+    protected function getDataPath(string $uri = ''): string
+    {
+        $path = sprintf(
+            '%s/data/%s.json',
+            $this->dir,
+            $uri,
+        );
+
+        return $path;
+    }
+
+    /**
+     * Жив ли файл кэша
+     *
+     * @param string $path
+     * @return boolean
+     */
+    protected function isAlive(string $path): bool
+    {
+        $time = filemtime($path);
+        return ($time && time() - $time < $this->ttl);
+    }
+
+    /**
+     * Рекурсивное удаление директории кэша
+     *
+     * @param string $path
+     * @return boolean
+     */
     protected function rmDir(string $path): bool
     {
         if (is_file($path)) {
