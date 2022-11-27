@@ -41,8 +41,8 @@ class FileManager implements FileManagerInterface
     {
         $path2 = ($path && $path != '/' ? $this->dir . '/' . $path : $this->dir);
         if (file_exists($path2) && is_dir($path2)) {
-            $file = new Directory($path2, $this->dir);
-            return $file;
+            $directory = new Directory($path2, $this->dir);
+            return $directory;
         }
 
         return null;
