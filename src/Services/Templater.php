@@ -110,7 +110,7 @@ class Templater implements TemplaterInterface
     {
         extract(array_merge($data, $this->env));
         ob_start();
-        include(sprintf('%s%s.php', $this->pathTemplateDir, $template));
+        include(sprintf('%s/%s.php', $this->pathTemplateDir, $template));
         $html = ob_get_clean();
 
         return $html;
