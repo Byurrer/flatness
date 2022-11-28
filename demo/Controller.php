@@ -151,7 +151,7 @@ class Controller
         $page = null;
         if (!$this->cache || !($page = $this->cache->getPage($post))) {
             if ($resource = $this->resourceManager->getPost($post)) {
-                $page = $this->templater->make('post', $resource->getEnv());
+                $page = $this->templater->make('index', $resource->getEnv());
                 $this->cache->savePage($post, $page);
             } else {
                 $this->templater->make('service', ['code' => 404]);
