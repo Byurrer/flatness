@@ -1,6 +1,8 @@
 <?php
 
-namespace Flatness\Core\Resources;
+namespace Flatness\Core\Resources\Containers;
+
+use Flatness\Core\Resources\ResourceAbstract;
 
 class Index extends ContainerAbstract
 {

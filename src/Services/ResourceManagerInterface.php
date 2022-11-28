@@ -2,10 +2,10 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Tag;
 use Flatness\Core\Resources\Post;
-use Flatness\Core\Resources\Index;
-use Flatness\Core\Resources\Category;
+use Flatness\Core\Resources\Containers\Tag;
+use Flatness\Core\Resources\Containers\Index;
+use Flatness\Core\Resources\Containers\Category;
 
 /**
  * Интерфейс менеджера ресурсов
@@ -49,14 +49,25 @@ interface ResourceManagerInterface
     /**
      * Получить ассоциативный массив всех категорий
      *
-     * @return array
+     * Ключи массивов:
+     *  - name - название на латинице (часть uri)
+     *  - uri
+     *  - frontMatter - ассоциативный массив с frontMatter данными из index.md файла
+     *  - count - количество материалов
+     *
+     * @return array<string, mixed>
      */
     public function getCategories(): array;
 
     /**
      * Получить ассоциативный массив всех тегов
      *
-     * @return array
+     * Ключи массивов:
+     *  - name - название на латинице (часть uri)
+     *  - uri
+     *  - count - количество материалов
+     *
+     * @return array<string, mixed>
      */
     public function getTags(): array;
 }

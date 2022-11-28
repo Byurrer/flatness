@@ -2,7 +2,7 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\ContainerAbstract;
+use Flatness\Core\Resources\Containers\ContainerAbstract;
 
 /**
  * Интерфейс шаблонизатора

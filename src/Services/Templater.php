@@ -2,9 +2,7 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Post;
-use Flatness\Core\Resources\ResourceAbstract;
-use Flatness\Core\Resources\ContainerAbstract;
+use Flatness\Core\Resources\Containers\ContainerAbstract;
 
 /**
  * Реализация шаблонизатора

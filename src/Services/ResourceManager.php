@@ -2,10 +2,10 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Tag;
 use Flatness\Core\Resources\Post;
-use Flatness\Core\Resources\Index;
-use Flatness\Core\Resources\Category;
+use Flatness\Core\Resources\Containers\Tag;
+use Flatness\Core\Resources\Containers\Index;
+use Flatness\Core\Resources\Containers\Category;
 
 /**
  * Реализация менеджера ресурсов
@@ -127,11 +127,13 @@ class ResourceManager implements ResourceManagerInterface
 
         $a = [];
         while ($dir = $iterator->current()) {
+            $category = Category::fromDirectory($dir, '', $this->buildUriPost);
             $tmp = Post::fromFile($dir->getIndex(), ($this->buildUriCategory)($dir->getName()))->getEnv();
             $a[$tmp['name']] = [
                 'name' => $tmp['name'],
                 'uri' => $tmp['uri'],
                 'frontMatter' => $tmp['frontMatter'],
+                'count' => $category->getTotal(),
             ];
         }
 
