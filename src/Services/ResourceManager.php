@@ -128,10 +128,9 @@ class ResourceManager implements ResourceManagerInterface
         $a = [];
         while ($dir = $iterator->current()) {
             $tmp = Post::fromFile($dir->getIndex(), ($this->buildUriCategory)($dir->getName()))->getEnv();
-            $a[] = [
+            $a[$tmp['name']] = [
                 'name' => $tmp['name'],
                 'uri' => $tmp['uri'],
-                'description' => $tmp['description'],
                 'frontMatter' => $tmp['frontMatter'],
             ];
         }
