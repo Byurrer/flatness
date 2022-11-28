@@ -2,7 +2,6 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\ResourceAbstract;
 use Flatness\Core\Resources\ContainerAbstract;
 
 /**
@@ -11,52 +10,31 @@ use Flatness\Core\Resources\ContainerAbstract;
 interface TemplaterInterface
 {
     /**
-     * Сделать страницу из ресурса
+     * Сделать html из данных
      *
-     * @param ResourceAbstract $resource
+     * @param string $template шаблон php
+     * @param array $data данные для шаблона
      * @return string
      */
-    public function makePageFromResource(ResourceAbstract $resource): string;
+    public function make(string $template, array $data = []): string;
 
     /**
-     * Сделать html карточку ресурса
+     * Сделать html из контейнера ресурсов
      *
-     * @param ResourceAbstract $resource
+     * @param string $template шаблон php
+     * @param ContainerAbstract $resources
      * @return string
      */
-    public function makeCard(ResourceAbstract $resource): string;
+    public function makeFromContainer(string $template, ContainerAbstract $resources);
 
     /**
      * Сделать html пагинации
      *
-     * @param ContainerAbstract $resource
+     * @param string $template шаблон php
+     * @param string $uri
      * @param integer $currPage
      * @param integer $countPage
      * @return string
      */
-    public function makePagination(ContainerAbstract $resource, int $currPage, int $countPage): string;
-
-    //######################################################################
-
-    /**
-     * Сделать сервисную страницу
-     *
-     * @param integer $code http код
-     *
-     * @return string
-     */
-    public function makeService(int $code): string;
-
-    //######################################################################
-
-    /**
-     * Сделать страницу из данных
-     *
-     * @param string $template шаблон php
-     * @param string $uri
-     * @param string $type
-     * @param array $data данные для шаблона
-     * @return string
-     */
-    public function makePage(string $template, string $uri, string $type, array $data = []): string;
+    public function makePagination(string $template, string $uri, int $currPage, int $countPage): string;
 }

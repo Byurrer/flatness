@@ -97,7 +97,7 @@ try {
     $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
     switch ($routeInfo[0]) {
         case FastRoute\Dispatcher::NOT_FOUND:
-            $response = new Response(404, [], $templater->makeService(404));
+            $response = new Response(404, [], $templater->make('service', ['code' => 404]));
             break;
         case FastRoute\Dispatcher::FOUND:
             $handler = $routeInfo[1];

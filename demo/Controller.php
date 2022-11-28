@@ -30,10 +30,20 @@ class Controller
         $page = null;
         if (!$this->cache || !($page = $this->cache->getPage($cachedPath))) {
             if ($resource = $this->resourceManager->getIndex($pageNum)) {
-                $page = $this->templater->makePageFromResource($resource);
+                $countPage = ceil($resource->getTotal() / $resource->getLimit());
+                $currPage = round($resource->getOffset() / $resource->getLimit() + 0.5);
+
+                $uri = $request->getRequestTarget();
+                $uri = $this->extrudeUriPagination($uri);
+
+                $env = $resource->getEnv();
+                $env['content'] = $this->templater->makeFromContainer('card', $resource);
+                $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+
+                $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
             } else {
-                $this->templater->makeService(404);
+                $this->templater->make('service', ['code' => 404]);
             }
         }
 
@@ -48,7 +58,7 @@ class Controller
             if (!($tags = $this->cache->getData('tags'))) {
                 $tags = $this->resourceManager->getTags();
             }
-            $page = $this->templater->makePage('tags', 'tags', '', $tags);
+            $page = $this->templater->make('tags', $tags);
             $this->cache->savePage('tags', $page);
         }
 
@@ -63,7 +73,7 @@ class Controller
             if (!($categoties = $this->cache->getData('categories'))) {
                 $categoties = $this->resourceManager->getCategories();
             }
-            $page = $this->templater->makePage('categories', 'categories', '', $categoties);
+            $page = $this->templater->make('categories', $categoties);
             $this->cache->savePage('categories', $page);
         }
 
@@ -81,10 +91,20 @@ class Controller
         $page = null;
         if (!($page = $this->cache->getPage($cachedPath))) {
             if ($resource = $this->resourceManager->getCategory($category, $pageNum)) {
-                $page = $this->templater->makePageFromResource($resource);
+                $countPage = ceil($resource->getTotal() / $resource->getLimit());
+                $currPage = round($resource->getOffset() / $resource->getLimit() + 0.5);
+
+                $uri = $request->getRequestTarget();
+                $uri = $this->extrudeUriPagination($uri);
+
+                $env = $resource->getEnv();
+                $env['content'] = $this->templater->makeFromContainer('card', $resource);
+                $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+
+                $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
             } else {
-                $this->templater->makeService(404);
+                $this->templater->make('service', ['code' => 404]);
             }
         }
 
@@ -102,10 +122,20 @@ class Controller
         $page = null;
         if (!($page = $this->cache->getPage($cachedPath))) {
             if ($resource = $this->resourceManager->getTag($tag, $pageNum)) {
-                $page = $this->templater->makePageFromResource($resource);
+                $countPage = ceil($resource->getTotal() / $resource->getLimit());
+                $currPage = round($resource->getOffset() / $resource->getLimit() + 0.5);
+
+                $uri = $request->getRequestTarget();
+                $uri = $this->extrudeUriPagination($uri);
+
+                $env = $resource->getEnv();
+                $env['content'] = $this->templater->makeFromContainer('card', $resource);
+                $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+
+                $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
             } else {
-                $this->templater->makeService(404);
+                $this->templater->make('service', ['code' => 404]);
             }
         }
 
@@ -121,10 +151,10 @@ class Controller
         $page = null;
         if (!$this->cache || !($page = $this->cache->getPage($post))) {
             if ($resource = $this->resourceManager->getPost($post)) {
-                $page = $this->templater->makePageFromResource($resource);
+                $page = $this->templater->make('post', $resource->getEnv());
                 $this->cache->savePage($post, $page);
             } else {
-                $this->templater->makeService(404);
+                $this->templater->make('service', ['code' => 404]);
             }
         }
 
@@ -139,4 +169,19 @@ class Controller
     protected ResourceManagerInterface $resourceManager;
     protected ?CacheInterface $cache;
     protected TemplaterInterface $templater;
+
+    //######################################################################
+
+    protected function extrudeUriPagination(string $uri): string
+    {
+        $a = explode('/', $uri);
+        if (is_numeric($a[count($a) - 1])) {
+            array_pop($a);
+            $uri = implode('/', $a);
+        }
+
+        $uri = rtrim($uri, '/') . '/';
+
+        return $uri;
+    }
 }
