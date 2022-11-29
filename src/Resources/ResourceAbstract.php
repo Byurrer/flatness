@@ -57,11 +57,6 @@ abstract class ResourceAbstract
         $this->converter = new MarkdownConverter($environment);
     }
 
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
     public function setUri(string $uri): self
     {
         $this->uri = $uri;
@@ -130,7 +125,6 @@ abstract class ResourceAbstract
     protected string $name = '';
     protected string $description = '';
     protected string $content = '';
-    protected string $type = '';
 
     protected array $frontMatter = [];
 }

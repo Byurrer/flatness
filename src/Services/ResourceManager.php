@@ -2,102 +2,194 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
+use Flatness\Core\Resources\Post;
+use Flatness\Core\Resources\ResourceContainer;
 
+/**
+ * Реализация менеджера ресурсов
+ */
 class ResourceManager implements ResourceManagerInterface
 {
     public function __construct(
-        CacheInterface $cache,
-        PageFactoryInterface $pageFactory
+        FileManagerInterface $fileManager,
+        callable $buildUriPost,
+        callable $buildUriTag,
+        callable $buildUriCategory,
+        int $perPage = 10
     ) {
-        $this->cache = $cache;
-        $this->pageFactory = $pageFactory;
+        $this->fileManager = $fileManager;
+        $this->perPage = $perPage;
+
+        $this->buildUriPost = $buildUriPost;
+        $this->buildUriTag = $buildUriTag;
+        $this->buildUriCategory = $buildUriCategory;
     }
 
     /**
      * @inheritDoc
      */
-    public function getIndex(int $pagenum = 1): Page
+    public function getIndex(int $pagenum = 1): ?ResourceContainer
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getIndex($pagenum))) {
-            return $page;
-        }
+        $index = $this->fileManager->getDirectory('/');
+        $postList = ResourceContainer::fromDirectory(
+            $index,
+            '/',
+            $this->buildUriPost,
+            ($pagenum - 1) * $this->perPage,
+            $this->perPage
+        );
 
-        $page = $this->pageFactory->makeIndex($pagenum);
-
-        if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
-            $this->cache->save($page);
-        }
-
-        return $page;
+        return ($postList->count() > 0 ? $postList : null);
     }
 
     /**
      * @inheritDoc
      */
-    public function getCategory(string $path, int $pagenum = 1): Page
+    public function getCategory(string $path, int $pagenum = 1): ?ResourceContainer
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getCategory($path, $pagenum))) {
-            return $page;
+        if (!($category = $this->fileManager->getDirectory($path))) {
+            return null;
         }
 
-        $page = $this->pageFactory->makeCategory($path, $pagenum);
+        $postList = ResourceContainer::fromDirectory(
+            $category,
+            ($this->buildUriCategory)($category->getName()),
+            $this->buildUriPost,
+            ($pagenum - 1) * $this->perPage,
+            $this->perPage
+        );
 
-        if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
-            $this->cache->save($page);
-        }
-
-        return $page;
+        return ($postList->count() > 0 ? $postList : null);
     }
 
     /**
      * @inheritDoc
      */
-    public function getTag(string $name, int $pagenum = 1): Page
+    public function getTag(string $name, int $pagenum = 1): ?ResourceContainer
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getTag($name, $pagenum))) {
-            return $page;
+        $offset = ($pagenum - 1) * $this->perPage;
+        $directory = $this->fileManager->getDirectory('/');
+        $postListAll = ResourceContainer::fromDirectory($directory, '', $this->buildUriPost, 0, PHP_INT_MAX);
+        $postListConcrete = new ResourceContainer();
+
+        $total = 0;
+        for ($i = 0; $i < $postListAll->count(); ++$i) {
+            $post = $postListAll[$i];
+            if (array_search($name, $post->getTags()) !== false) {
+                ++$total;
+                if ($total > $offset && $postListConcrete->count() < $this->perPage) {
+                    $postListConcrete[] = $post;
+                }
+            }
         }
 
-        $page = $this->pageFactory->makeTag($name, $pagenum);
-
-        if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
-            $this->cache->save($page);
+        if ($postListConcrete->count() == 0) {
+            return null;
+        } else {
+            $postListConcrete->setOffset($offset);
+            $postListConcrete->setLimit($this->perPage);
+            $postListConcrete->setTotal($total);
+            $postListConcrete->setUri(($this->buildUriTag)($name));
+            $postListConcrete->setName($name);
+            $postListConcrete->setDescription('');
         }
 
-        return $page;
+        return $postListConcrete;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPost(string $name): Page
+    public function getPost(string $name): ?Post
     {
-        if (CACHE_ENABLE && ($page = $this->cache->getPost($name))) {
-            return $page;
+        if (!($postFile = $this->fileManager->getFile($name))) {
+            return null;
         }
 
-        $page = $this->pageFactory->makePost($name);
+        $post = Post::fromFile($postFile, ($this->buildUriPost)($postFile->getName()));
 
-        if (CACHE_ENABLE && $page->getType() != Page::TYPE_SERVICE) {
-            $this->cache->save($page);
-        }
-
-        return $page;
+        return $post;
     }
 
     /**
      * @inheritDoc
      */
-    public function getService(int $code): Page
+    public function getCategories(): array
     {
-        return $this->pageFactory->makeService($code);
+        if ($this->cachedTags) {
+            return $this->cachedTags;
+        }
+
+        $root = $this->fileManager->getDirectory('/');
+        $iterator = $root->getDirectoryIterator();
+
+        $a = [];
+        while ($dir = $iterator->current()) {
+            $category = ResourceContainer::fromDirectory($dir, '', $this->buildUriPost);
+            $tmp = Post::fromFile($dir->getIndex(), ($this->buildUriCategory)($dir->getName()))->getEnv();
+            $a[$tmp['name']] = [
+                'name' => $tmp['name'],
+                'uri' => $tmp['uri'],
+                'frontMatter' => $tmp['frontMatter'],
+                'count' => $category->getTotal(),
+            ];
+        }
+
+        $this->cachedTags = $a;
+
+        return $a;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTags(): array
+    {
+        if ($this->cachedCategories) {
+            return $this->cachedCategories;
+        }
+
+        $root = $this->fileManager->getDirectory('/');
+        $postList = ResourceContainer::fromDirectory(
+            $root,
+            '/',
+            $this->buildUriPost,
+            0,
+            PHP_INT_MAX
+        );
+
+        $a = [];
+        for ($i = 0; $i < $postList->count(); ++$i) {
+            $post = $postList[$i];
+            $tags = $post->getTags();
+            foreach ($tags as $tag) {
+                if (!isset($a[$tag])) {
+                    $a[$tag] = [
+                        'name' => $tag,
+                        'uri' => ($this->buildUriTag)($tag),
+                        'count' => 0,
+                    ];
+                }
+                $a[$tag]['count'] += 1;
+            }
+        }
+
+        $this->cachedCategories = $a;
+
+        return $a;
     }
 
     //######################################################################
     // PROTECTED
     //######################################################################
 
-    protected CacheInterface $cache;
-    protected PageFactoryInterface $pageFactory;
+    protected FileManagerInterface $fileManager;
+    protected int $perPage = 10;
+
+    protected $buildUriPost;
+    protected $buildUriTag;
+    protected $buildUriCategory;
+
+    protected $cachedCategories = [];
+    protected $cachedTags = [];
 }

@@ -17,13 +17,13 @@
             <div class="introduction">
                 <?php
                 if ($type == 'index' || $type == 'category') {
-                    include(__DIR__ . '/Introductions/Category.php');
+                    include(__DIR__ . '/introductions/category.php');
                 } elseif ($type == 'post') {
-                    include(__DIR__ . '/Introductions/Post.php');
+                    include(__DIR__ . '/introductions/post.php');
                 } elseif ($type == 'tag') {
-                    include(__DIR__ . '/Introductions/Tag.php');
+                    include(__DIR__ . '/introductions/tag.php');
                 } elseif ($type == 'service') {
-                    include(__DIR__ . '/Introductions/Service.php');
+                    include(__DIR__ . '/introductions/service.php');
                 }
                 ?>
             </div>
@@ -34,6 +34,8 @@
         <div class="footer">
             <div class="footer-copyright">Copyright © 2019-2022 {username}</div>
         </div>
+        <?php echo print_r($allTags, true); ?>
+        <?php echo print_r($allCategories, true); ?>
     </div>
 </body>
 </html>

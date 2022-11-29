@@ -10,6 +10,13 @@ use League\CommonMark\Extension\FrontMatter\FrontMatterProviderInterface;
  */
 class Post extends ResourceAbstract implements RenderableInterface
 {
+    /**
+     * Создать объект из файла
+     *
+     * @param FileInterface $file
+     * @param string $uri
+     * @return self
+     */
     public static function fromFile(FileInterface $file, string $uri): self
     {
         $post = new self();
@@ -23,13 +30,13 @@ class Post extends ResourceAbstract implements RenderableInterface
 
         $name = $map['name'];
         $description = $map['description'];
-        $tags = $map['tags'];
+        $tags = (isset($map['tags']) ? $map['tags'] : []);
         $categories = $file->getParents();
 
         $post->setName($name);
         $post->setDescription($description);
-        $post->setCategories($categories);
-        $post->setTags($tags);
+        $post->categories = $categories;
+        $post->tags = $tags;
         $post->setContent($md);
 
         $post->frontMatter = $map;
@@ -37,6 +44,9 @@ class Post extends ResourceAbstract implements RenderableInterface
         return $post;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getHtmlContent(): string
     {
         if (!$this->render) {
@@ -45,31 +55,24 @@ class Post extends ResourceAbstract implements RenderableInterface
         return $this->render->getContent();
     }
 
-    public function setCategories(array $categories): self
-    {
-        $this->categories = $categories;
-        return $this;
-    }
-
+    /**
+     * Получить массив категорий поста
+     *
+     * @return array
+     */
     public function getCategories(): array
     {
         return $this->categories;
     }
 
-    public function setTags(array $tags): self
-    {
-        $this->tags = $tags;
-        return $this;
-    }
-
+    /**
+     * Получить массив тегов поста
+     *
+     * @return array
+     */
     public function getTags(): array
     {
         return $this->tags;
-    }
-
-    public function toStringTags(): string
-    {
-        return implode(', ', $this->tags);
     }
 
     /**
@@ -86,9 +89,8 @@ class Post extends ResourceAbstract implements RenderableInterface
     // PROTECTED
     //######################################################################
 
-    protected array $category = [];
-
-    protected string $type = Page::TYPE_POST;
+    /** @var array<string> */
+    protected array $categories = [];
 
     /** @var array<string> */
     protected array $tags = [];

@@ -10,7 +10,7 @@ use Flatness\Core\FileSystem\DirectoryInterface;
 /**
  * Реализация файловой системы контента
  */
-class Content implements ContentInterface
+class FileManager implements FileManagerInterface
 {
     /**
      * @param string $dir корень файлов контента
@@ -41,8 +41,8 @@ class Content implements ContentInterface
     {
         $path2 = ($path && $path != '/' ? $this->dir . '/' . $path : $this->dir);
         if (file_exists($path2) && is_dir($path2)) {
-            $file = new Directory($path2, $this->dir);
-            return $file;
+            $directory = new Directory($path2, $this->dir);
+            return $directory;
         }
 
         return null;

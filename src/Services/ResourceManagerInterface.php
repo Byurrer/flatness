@@ -2,7 +2,8 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
+use Flatness\Core\Resources\Post;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Интерфейс менеджера ресурсов
@@ -13,42 +14,58 @@ interface ResourceManagerInterface
      * Получить главную страницу, с пагинацией
      *
      * @param integer $pagenum
-     * @return Page
+     * @return ResourceContainer|null
      */
-    public function getIndex(int $pagenum = 1): Page;
+    public function getIndex(int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу категории, с пагинацией
      *
      * @param string $name
      * @param integer $pagenum
-     * @return Page
+     * @return ResourceContainer|null
      */
-    public function getCategory(string $name, int $pagenum = 1): Page;
+    public function getCategory(string $name, int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу тега, с пагинацией
      *
      * @param string $name
      * @param integer $pagenum
-     * @return Page
+     * @return ResourceContainer|null
      */
-    public function getTag(string $name, int $pagenum = 1): Page;
+    public function getTag(string $name, int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу поста
      *
      * @param string $name
-     * @return Page
+     * @return Post|null
      */
-    public function getPost(string $name): Page;
+    public function getPost(string $name): ?Post;
 
     /**
-     * Получить сервисную страницу
+     * Получить ассоциативный массив всех категорий
      *
-     * @param integer $code http код
+     * Ключи массивов:
+     *  - name - название на латинице (часть uri)
+     *  - uri
+     *  - frontMatter - ассоциативный массив с frontMatter данными из index.md файла
+     *  - count - количество материалов
      *
-     * @return Page
+     * @return array<string, mixed>
      */
-    public function getService(int $code): Page;
+    public function getCategories(): array;
+
+    /**
+     * Получить ассоциативный массив всех тегов
+     *
+     * Ключи массивов:
+     *  - name - название на латинице (часть uri)
+     *  - uri
+     *  - count - количество материалов
+     *
+     * @return array<string, mixed>
+     */
+    public function getTags(): array;
 }

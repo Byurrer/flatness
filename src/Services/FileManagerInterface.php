@@ -8,7 +8,7 @@ use Flatness\Core\FileSystem\DirectoryInterface;
 /**
  * Интерфейс файловой системы контента
  */
-interface ContentInterface
+interface FileManagerInterface
 {
     /**
      * Получить объект файла (рекурсивный обход)

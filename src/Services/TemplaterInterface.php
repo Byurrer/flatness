@@ -2,9 +2,7 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Page;
-use Flatness\Core\Resources\ResourceAbstract;
-use Flatness\Core\Resources\ContainerAbstract;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Интерфейс шаблонизатора
@@ -12,39 +10,31 @@ use Flatness\Core\Resources\ContainerAbstract;
 interface TemplaterInterface
 {
     /**
-     * Создать страницу из ресурса
+     * Сделать html из данных
      *
-     * @param ResourceAbstract $resource
-     * @return Page
-     */
-    public function makePage(ResourceAbstract $resource): Page;
-
-    /**
-     * Сгенерировать html карточку ресурса
-     *
-     * @param ResourceAbstract $resource
+     * @param string $template шаблон php
+     * @param array $data данные для шаблона
      * @return string
      */
-    public function makeCard(ResourceAbstract $resource): string;
+    public function make(string $template, array $data = []): string;
 
     /**
-     * Сгенерировать html пагниации
+     * Сделать html из контейнера ресурсов
      *
-     * @param ContainerAbstract $resource
+     * @param string $template шаблон php
+     * @param ResourceContainer $resources
+     * @return string
+     */
+    public function makeFromContainer(string $template, ResourceContainer $resources);
+
+    /**
+     * Сделать html пагинации
+     *
+     * @param string $template шаблон php
+     * @param string $uri
      * @param integer $currPage
      * @param integer $countPage
      * @return string
      */
-    public function makePagination(ContainerAbstract $resource, int $currPage, int $countPage): string;
-
-    //######################################################################
-
-    /**
-     * Сгенерировать сервисную страницу
-     *
-     * @param integer $code http код
-     *
-     * @return Page
-     */
-    public function makeService(int $code): Page;
+    public function makePagination(string $template, string $uri, int $currPage, int $countPage): string;
 }

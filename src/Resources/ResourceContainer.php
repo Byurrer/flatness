@@ -2,45 +2,61 @@
 
 namespace Flatness\Core\Resources;
 
+use Flatness\Core\Resources\Post;
+use Flatness\Core\Resources\ResourceAbstract;
 use Flatness\Core\FileSystem\DirectoryInterface;
 
 /**
  * Контейнер ресурсов
  */
-abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAccess, \Countable, \Iterator
+class ResourceContainer extends ResourceAbstract implements \ArrayAccess, \Countable, \Iterator
 {
+    /**
+     * Создать объект из директории
+     *
+     * @param DirectoryInterface $directory
+     * @param string $uri
+     * @param callable $postUriBuilder
+     * @param integer $offset
+     * @param integer $limit
+     * @return self
+     */
     public static function fromDirectory(
-        DirectoryInterface $category,
+        DirectoryInterface $directory,
         string $uri,
         callable $postUriBuilder,
         int $offset = 0,
         int $limit = 10
     ): self {
-        $postList = new static();
-        $postList->setOffset($offset);
-        $postList->setLimit($limit);
-        $category->setOffset($offset);
-        $postList->setTotal($category->getTotal());
+        $list = new static();
+        $list->setOffset($offset);
+        $list->setLimit($limit);
+
+        $iterator = $directory->getFileIterator();
+        $iterator->setOffset($offset);
+        $list->setTotal($iterator->getCount());
 
         $i = 0;
         while (
             $i++ < $limit
-            && ($postFile = $category->getFileIncr())
+            && ($postFile = $iterator->current())
         ) {
-            $postList[] = Post::fromFile($postFile, $postUriBuilder($postFile));
+            $list[] = Post::fromFile($postFile, $postUriBuilder($postFile->getName()));
         }
 
-        $indexFile = $category->getIndex();
+        $indexFile = $directory->getIndex();
         $md = $indexFile->getContent();
-        $postList->render = $postList->converter->convert($md);
-        $map = $postList->render->getFrontMatter();
 
-        $postList->setUri($uri);
-        $postList->setName($map['name']);
-        $postList->setDescription($map['description']);
-        $postList->frontMatter = $map;
+        /** @var FrontMatterProviderInterface */
+        $list->render = $list->converter->convert($md);
+        $map = $list->render->getFrontMatter();
 
-        return $postList;
+        $list->setUri($uri);
+        $list->setName($map['name']);
+        $list->setDescription($map['description']);
+        $list->frontMatter = $map;
+
+        return $list;
     }
 
     //######################################################################
