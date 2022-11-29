@@ -3,9 +3,7 @@
 namespace Flatness\Core\Services;
 
 use Flatness\Core\Resources\Post;
-use Flatness\Core\Resources\Containers\Tag;
-use Flatness\Core\Resources\Containers\Index;
-use Flatness\Core\Resources\Containers\Category;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Реализация менеджера ресурсов
@@ -30,10 +28,10 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getIndex(int $pagenum = 1): ?Index
+    public function getIndex(int $pagenum = 1): ?ResourceContainer
     {
         $index = $this->fileManager->getDirectory('/');
-        $postList = Index::fromDirectory(
+        $postList = ResourceContainer::fromDirectory(
             $index,
             '/',
             $this->buildUriPost,
@@ -47,13 +45,13 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getCategory(string $path, int $pagenum = 1): ?Category
+    public function getCategory(string $path, int $pagenum = 1): ?ResourceContainer
     {
         if (!($category = $this->fileManager->getDirectory($path))) {
             return null;
         }
 
-        $postList = Category::fromDirectory(
+        $postList = ResourceContainer::fromDirectory(
             $category,
             ($this->buildUriCategory)($category->getName()),
             $this->buildUriPost,
@@ -67,12 +65,12 @@ class ResourceManager implements ResourceManagerInterface
     /**
      * @inheritDoc
      */
-    public function getTag(string $name, int $pagenum = 1): ?Tag
+    public function getTag(string $name, int $pagenum = 1): ?ResourceContainer
     {
         $offset = ($pagenum - 1) * $this->perPage;
         $directory = $this->fileManager->getDirectory('/');
-        $postListAll = Index::fromDirectory($directory, '', $this->buildUriPost, 0, PHP_INT_MAX);
-        $postListConcrete = new Tag();
+        $postListAll = ResourceContainer::fromDirectory($directory, '', $this->buildUriPost, 0, PHP_INT_MAX);
+        $postListConcrete = new ResourceContainer();
 
         $total = 0;
         for ($i = 0; $i < $postListAll->count(); ++$i) {
@@ -127,7 +125,7 @@ class ResourceManager implements ResourceManagerInterface
 
         $a = [];
         while ($dir = $iterator->current()) {
-            $category = Category::fromDirectory($dir, '', $this->buildUriPost);
+            $category = ResourceContainer::fromDirectory($dir, '', $this->buildUriPost);
             $tmp = Post::fromFile($dir->getIndex(), ($this->buildUriCategory)($dir->getName()))->getEnv();
             $a[$tmp['name']] = [
                 'name' => $tmp['name'],
@@ -152,7 +150,7 @@ class ResourceManager implements ResourceManagerInterface
         }
 
         $root = $this->fileManager->getDirectory('/');
-        $postList = Index::fromDirectory(
+        $postList = ResourceContainer::fromDirectory(
             $root,
             '/',
             $this->buildUriPost,

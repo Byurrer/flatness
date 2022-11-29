@@ -7,6 +7,9 @@ namespace Flatness\Core\FileSystem;
  */
 class FileIterator extends IteratorAbstract
 {
+    /**
+     * @inheritDoc
+     */
     public function current(): ?FileInterface
     {
         if ($this->current < count($this->objects)) {

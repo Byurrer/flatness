@@ -3,9 +3,7 @@
 namespace Flatness\Core\Services;
 
 use Flatness\Core\Resources\Post;
-use Flatness\Core\Resources\Containers\Tag;
-use Flatness\Core\Resources\Containers\Index;
-use Flatness\Core\Resources\Containers\Category;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Интерфейс менеджера ресурсов
@@ -16,27 +14,27 @@ interface ResourceManagerInterface
      * Получить главную страницу, с пагинацией
      *
      * @param integer $pagenum
-     * @return Index|null
+     * @return ResourceContainer|null
      */
-    public function getIndex(int $pagenum = 1): ?Index;
+    public function getIndex(int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу категории, с пагинацией
      *
      * @param string $name
      * @param integer $pagenum
-     * @return Category|null
+     * @return ResourceContainer|null
      */
-    public function getCategory(string $name, int $pagenum = 1): ?Category;
+    public function getCategory(string $name, int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу тега, с пагинацией
      *
      * @param string $name
      * @param integer $pagenum
-     * @return Tag|null
+     * @return ResourceContainer|null
      */
-    public function getTag(string $name, int $pagenum = 1): ?Tag;
+    public function getTag(string $name, int $pagenum = 1): ?ResourceContainer;
 
     /**
      * Получить страницу поста

@@ -2,7 +2,7 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Containers\ContainerAbstract;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Реализация шаблонизатора
@@ -48,7 +48,7 @@ class Templater implements TemplaterInterface
     /**
      * @inheritDoc
      */
-    public function makeFromContainer(string $template, ContainerAbstract $resources): string
+    public function makeFromContainer(string $template, ResourceContainer $resources): string
     {
         $a = [];
         foreach ($resources as $resource) {

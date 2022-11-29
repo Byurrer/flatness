@@ -2,7 +2,7 @@
 
 namespace Flatness\Core\Services;
 
-use Flatness\Core\Resources\Containers\ContainerAbstract;
+use Flatness\Core\Resources\ResourceContainer;
 
 /**
  * Интерфейс шаблонизатора
@@ -22,10 +22,10 @@ interface TemplaterInterface
      * Сделать html из контейнера ресурсов
      *
      * @param string $template шаблон php
-     * @param ContainerAbstract $resources
+     * @param ResourceContainer $resources
      * @return string
      */
-    public function makeFromContainer(string $template, ContainerAbstract $resources);
+    public function makeFromContainer(string $template, ResourceContainer $resources);
 
     /**
      * Сделать html пагинации

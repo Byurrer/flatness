@@ -1,6 +1,6 @@
 <?php
 
-namespace Flatness\Core\Resources\Containers;
+namespace Flatness\Core\Resources;
 
 use Flatness\Core\Resources\Post;
 use Flatness\Core\Resources\ResourceAbstract;
@@ -9,8 +9,18 @@ use Flatness\Core\FileSystem\DirectoryInterface;
 /**
  * Контейнер ресурсов
  */
-abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAccess, \Countable, \Iterator
+class ResourceContainer extends ResourceAbstract implements \ArrayAccess, \Countable, \Iterator
 {
+    /**
+     * Создать объект из директории
+     *
+     * @param DirectoryInterface $directory
+     * @param string $uri
+     * @param callable $postUriBuilder
+     * @param integer $offset
+     * @param integer $limit
+     * @return self
+     */
     public static function fromDirectory(
         DirectoryInterface $directory,
         string $uri,
@@ -36,6 +46,8 @@ abstract class ContainerAbstract extends ResourceAbstract implements \ArrayAcces
 
         $indexFile = $directory->getIndex();
         $md = $indexFile->getContent();
+
+        /** @var FrontMatterProviderInterface */
         $list->render = $list->converter->convert($md);
         $map = $list->render->getFrontMatter();
 

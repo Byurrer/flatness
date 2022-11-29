@@ -18,14 +18,6 @@ use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
  */
 abstract class ResourceAbstract
 {
-    public const TYPE_INDEX     = 'index';
-    public const TYPE_CATEGORY  = 'category';
-    public const TYPE_POST      = 'post';
-    public const TYPE_TAG       = 'tag';
-    public const TYPE_SERVICE   = 'service';
-
-    //######################################################################
-
     final public function __construct()
     {
         $config = [
@@ -63,11 +55,6 @@ abstract class ResourceAbstract
         $environment->addExtension(new AttributesExtension());
         $environment->addExtension(new StrikethroughExtension());
         $this->converter = new MarkdownConverter($environment);
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
     }
 
     public function setUri(string $uri): self
@@ -138,7 +125,6 @@ abstract class ResourceAbstract
     protected string $name = '';
     protected string $description = '';
     protected string $content = '';
-    protected string $type = '';
 
     protected array $frontMatter = [];
 }

@@ -39,6 +39,7 @@ class Controller
                 $env = $resource->getEnv();
                 $env['content'] = $this->templater->makeFromContainer('card', $resource);
                 $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+                $env['type'] = 'index';
 
                 $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
@@ -100,6 +101,7 @@ class Controller
                 $env = $resource->getEnv();
                 $env['content'] = $this->templater->makeFromContainer('card', $resource);
                 $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+                $env['type'] = 'category';
 
                 $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
@@ -131,6 +133,7 @@ class Controller
                 $env = $resource->getEnv();
                 $env['content'] = $this->templater->makeFromContainer('card', $resource);
                 $env['content'] .= $this->templater->makePagination('pagination', $uri, $currPage, $countPage);
+                $env['type'] = 'tag';
 
                 $page = $this->templater->make('index', $env);
                 $this->cache->savePage($cachedPath, $page);
@@ -151,7 +154,9 @@ class Controller
         $page = null;
         if (!$this->cache || !($page = $this->cache->getPage($post))) {
             if ($resource = $this->resourceManager->getPost($post)) {
-                $page = $this->templater->make('index', $resource->getEnv());
+                $env = $resource->getEnv();
+                $env['type'] = 'post';
+                $page = $this->templater->make('index', $env);
                 $this->cache->savePage($post, $page);
             } else {
                 $this->templater->make('service', ['code' => 404]);
