@@ -23,9 +23,10 @@ interface TemplaterInterface
      *
      * @param string $template шаблон php
      * @param ResourceContainer $resources
+     * @param int $limit
      * @return string
      */
-    public function makeFromContainer(string $template, ResourceContainer $resources);
+    public function makeFromContainer(string $template, ResourceContainer $resources, int $limit = 0);
 
     /**
      * Сделать html пагинации
