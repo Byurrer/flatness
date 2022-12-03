@@ -53,7 +53,7 @@ class Templater implements TemplaterInterface
         $a = [];
         $i = 0;
         foreach ($resources as $resource) {
-            if ($limit > 0 && $i++ < $limit) {
+            if ($limit > 0 && $i++ >= $limit) {
                 break;
             }
             $a[] = $this->make($template, $resource->getEnv());
