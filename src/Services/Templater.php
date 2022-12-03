@@ -48,10 +48,14 @@ class Templater implements TemplaterInterface
     /**
      * @inheritDoc
      */
-    public function makeFromContainer(string $template, ResourceContainer $resources): string
+    public function makeFromContainer(string $template, ResourceContainer $resources, int $limit = 0): string
     {
         $a = [];
+        $i = 0;
         foreach ($resources as $resource) {
+            if ($limit > 0 && $i++ < $limit) {
+                break;
+            }
             $a[] = $this->make($template, $resource->getEnv());
         }
 
