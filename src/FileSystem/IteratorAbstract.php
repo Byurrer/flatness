@@ -32,9 +32,7 @@ abstract class IteratorAbstract
      */
     public function setOffset(int $offset): self
     {
-        if ($offset >= 0 && $offset < count($this->objects)) {
-            $this->current = $offset;
-        }
+        $this->current = $offset;
         return $this;
     }
 

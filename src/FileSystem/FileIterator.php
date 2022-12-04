@@ -12,7 +12,7 @@ class FileIterator extends IteratorAbstract
      */
     public function current(): ?FileInterface
     {
-        if ($this->current < count($this->objects)) {
+        if ($this->current >= 0 && $this->current < count($this->objects)) {
             $path = $this->objects[$this->current++];
             return new File($path, $this->rootPath);
         }
