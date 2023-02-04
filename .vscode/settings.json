@@ -1,0 +1,8 @@
+{
+    "intelephense.environment.phpVersion": "8.1.0",
+    "phpcs.showSources": true,
+    "phpcs.executablePath": "vendor/bin/phpcs",
+    "phpcs.standard": "PSR12",
+    "phpstan.path": "vendor/bin/phpstan",
+    "intelephense.phpdoc.useFullyQualifiedNames": false
+}
