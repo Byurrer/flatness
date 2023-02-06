@@ -35,6 +35,7 @@ class PostListTest extends TestCase
         $postList = new PostList(CONTENT_DIR, $this->fs, $this->dirs, 0);
 
         $this->assertSame($postList->count(), 5);
+        $this->assertSame($postList->total(), 5);
 
         $i = 0;
         while ($post = $postList->next()) {
@@ -52,7 +53,8 @@ class PostListTest extends TestCase
 
         $postList = new PostList(CONTENT_DIR, $this->fs, $this->dirs, 2);
 
-        $this->assertSame($postList->count(), 5);
+        $this->assertSame($postList->count(), 3);
+        $this->assertSame($postList->total(), 5);
 
         $i = 2;
         while ($post = $postList->next()) {

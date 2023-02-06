@@ -58,6 +58,15 @@ class SystemTest extends TestCase
 
         $this->assertInstanceOf(PostList::class, $posts);
         $this->assertSame(5, $posts->count());
+        $this->assertSame(5, $posts->total());
+
+
+        $posts = $this->map->getPosts();
+        $posts->offset(2);
+
+        $this->assertInstanceOf(PostList::class, $posts);
+        $this->assertSame(3, $posts->count());
+        $this->assertSame(5, $posts->total());
     }
 
     public function testGetPostsTag()

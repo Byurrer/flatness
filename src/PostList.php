@@ -25,15 +25,20 @@ class PostList implements PostListInterface
 
     public function offset(int $offset = null): int
     {
-        if (is_int($offset)) {
+        if (is_int($offset) && $offset >= 0 && $offset <= $this->total()) {
             $this->offset = $offset;
         }
 
         return $this->offset;
     }
 
-    public function count(): int
+    public function total(): int
     {
         return count($this->dirs);
+    }
+
+    public function count(): int
+    {
+        return max($this->total() - $this->offset(), 0);
     }
 }
