@@ -25,8 +25,8 @@ class PostList implements PostListInterface
 
     public function offset(int $offset = null): int
     {
-        if (is_int($offset) && $offset >= 0 && $offset <= $this->total()) {
-            $this->offset = $offset;
+        if (is_int($offset) && $offset >= 0) {
+            $this->offset = min($offset, $this->total());
         }
 
         return $this->offset;

@@ -64,5 +64,17 @@ class PostListTest extends TestCase
         }
 
         $this->assertNull($postList->next());
+
+
+        $postList = new PostList(CONTENT_DIR, $this->fs, $this->dirs, 4);
+
+        $this->assertSame($postList->count(), 1);
+        $this->assertSame($postList->total(), 5);
+
+        $postList->offset(6);
+
+        $this->assertSame($postList->offset(), 5);
+        $this->assertSame($postList->count(), 0);
+        $this->assertSame($postList->total(), 5);
     }
 }
