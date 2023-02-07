@@ -54,6 +54,8 @@ class Post implements PostInterface
         $environment->addExtension(new StrikethroughExtension());
         $converter = new MarkdownConverter($environment);
 
+        $md = static::complementationImagesUrl($md, $path);
+
         /** @var FrontMatterProviderInterface & RenderedContentInterface */
         $render = $converter->convert($md);
 
@@ -106,6 +108,25 @@ class Post implements PostInterface
     {
         $a = get_object_vars($this);
         return $a;
+    }
+
+    //######################################################################
+
+    public static function complementationImagesUrl(string $md, string $relPath): string
+    {
+        $md = preg_replace_callback(
+            '/\!\[(.*?)\]\((.*?)\)/',
+            function ($matches) use ($relPath) {
+                return sprintf(
+                    '![%s](%s)',
+                    $matches[1],
+                    ($matches[2][0] == '/' ? $matches[2] : rtrim($relPath, '/') . '/' . $matches[2])
+                );
+            },
+            $md
+        );
+
+        return $md;
     }
 
     //######################################################################

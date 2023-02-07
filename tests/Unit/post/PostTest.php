@@ -40,4 +40,15 @@ class PostTest extends TestCase
             $post->toArray()
         );
     }
+
+    public function testComplementationImagesUrl()
+    {
+        $md = '## Header\n![Alternate text 1](images/test1.png)\n![Alternate text 2](/static/images/test2.png)\n![Alternate text 2](images/test3.png)';
+        $path = '/var/www/html';
+        $res = Post::complementationImagesUrl($md, $path);
+
+        $this->assertStringContainsString('/var/www/html/images/test1.png', $res);
+        $this->assertStringContainsString('/static/images/test2.png', $res);
+        $this->assertStringContainsString('/var/www/html/images/test3.png', $res);
+    }
 }
