@@ -118,7 +118,7 @@ class Post implements PostInterface
             '/\[(.*?)\]\((.*?)\)/',
             function ($matches) use ($relPath) {
                 return sprintf(
-                    '![%s](%s)',
+                    '[%s](%s)',
                     $matches[1],
                     ($matches[2][0] == '/' ? $matches[2] : rtrim($relPath, '/') . '/' . $matches[2])
                 );
