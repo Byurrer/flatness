@@ -115,7 +115,7 @@ class Post implements PostInterface
     public static function complementationImagesUrl(string $md, string $relPath): string
     {
         $md = preg_replace_callback(
-            '/\!\[(.*?)\]\((.*?)\)/',
+            '/\[(.*?)\]\((.*?)\)/',
             function ($matches) use ($relPath) {
                 return sprintf(
                     '![%s](%s)',
