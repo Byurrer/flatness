@@ -117,10 +117,11 @@ class Post implements PostInterface
         $md = preg_replace_callback(
             '/\[(.*?)\]\((.*?)\)/',
             function ($matches) use ($relPath) {
+                $isAbs = ($matches[2][0] == '/' || parse_url($matches[2], PHP_URL_SCHEME));
                 return sprintf(
                     '[%s](%s)',
                     $matches[1],
-                    ($matches[2][0] == '/' ? $matches[2] : rtrim($relPath, '/') . '/' . $matches[2])
+                    ($isAbs ? $matches[2] : rtrim($relPath, '/') . '/' . $matches[2])
                 );
             },
             $md

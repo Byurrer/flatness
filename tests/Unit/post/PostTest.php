@@ -43,12 +43,17 @@ class PostTest extends TestCase
 
     public function testComplementationImagesUrl()
     {
-        $md = '## Header\n![Alternate text 1](images/test1.png)\n![Alternate text 2](/static/images/test2.png)\n[file](file/file.ext)';
+        $md = '## Header\n![Alternate text 1](images/test1.png)';
+        $md .= '\n![Alternate text 2](/static/images/test2.png)\n';
+        $md .= '[file](file/file.ext)\n';
+        $md .= '[external link](http://byurrer.ru/)';
+
         $path = '/var/www/html';
         $res = Post::complementationImagesUrl($md, $path);
 
         $this->assertStringContainsString('/var/www/html/images/test1.png', $res);
         $this->assertStringContainsString('/static/images/test2.png', $res);
         $this->assertStringContainsString('/var/www/html/file/file.ext', $res);
+        $this->assertStringContainsString('[external link](http://byurrer.ru/)', $res);
     }
 }
